@@ -1,0 +1,58 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // PLACEHOLDER — point "internal" at your endpoint serving qwen3.6-27b (OpenAI-compatible).
+  // Replace every REPLACE-ME. If your serving stack supports it, enable preserve_thinking
+  // (Qwen3.6 feature) for better multi-turn consistency and lower token use.
+  "model": "internal/qwen3.6-27b",
+  "small_model": "internal/qwen3.6-27b",
+  "provider": {
+    "internal": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Internal (placeholder)",
+      "options": {
+        "baseURL": "http://REPLACE-ME.internal:8000/v1",
+        "apiKey": "REPLACE-ME-or-remove-if-unauthenticated"
+      },
+      "models": {
+        "qwen3.6-27b": {
+          "name": "Qwen3.6-27B"
+        }
+      }
+    }
+  },
+
+  // PLACEHOLDER — your internal Jira MCP server. Replace command/env with real values,
+  // then set "enabled": true. Shipped disabled so a placeholder launcher doesn't error at startup.
+  // Jira access is deliberately opencode-only; do NOT add this MCP to Claude Code.
+  "mcp": {
+    "jira": {
+      "type": "local",
+      "command": ["REPLACE-ME-jira-mcp-launcher"],
+      "enabled": false,
+      "environment": {
+        "JIRA_BASE_URL": "https://REPLACE-ME.atlassian.net",
+        "JIRA_TOKEN": "REPLACE-ME"
+      }
+    }
+  },
+
+  // Jira tools are disabled globally; only the sa-jira agent re-enables them
+  // ("jira*": true in its frontmatter). Keeps hallucinated Jira calls out of every other agent.
+  // Note: `tools` is deprecated for permission control but remains the mechanism for
+  // enabling/disabling MCP tools by name pattern — which is exactly what we need here.
+  "tools": {
+    "jira*": false
+  },
+
+  // The shared skills (workflow, templates, rules) live under ~/.claude/skills — outside the
+  // project directory. external_directory defaults to "ask", which would stall headless agents
+  // reading a template. Allow that path globally; everything else outside the project still asks.
+  // Pattern precedence is last-match-wins: catch-all first, specific rules after.
+  "permission": {
+    "external_directory": {
+      "*": "ask",
+      "~/.claude/skills/**": "allow"
+    }
+  }
+}
